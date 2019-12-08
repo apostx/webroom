@@ -1,0 +1,26 @@
+{
+    "name": "webroom",
+    "description": "WebRoom",
+    "version": "0.0.1",
+    "author": "apostx",
+    "license": "MIT",
+    "repository": "apostx/webroom",
+    "dependencies": {
+        "ws": "7.2.0"
+    },
+    "devDependencies": {
+        "request": "2.88.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "engines": {
+        "node": ">= 0.10.0"
+    },
+    "files": [
+        "LICENSE",
+        "Readme.md",
+        "index.js",
+        "lib/"
+    ]
+}
