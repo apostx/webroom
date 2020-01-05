@@ -1,0 +1,45 @@
+.tictactoe-table {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 300px;
+    height: 300px;
+  }
+  
+  .tictactoe-cell {
+    width: calc(100% / 3 - 2px);
+    height: calc(100% / 3 - 2px);
+    background-color: red;
+    display: block;
+    border: 1px solid black;
+    padding: 0;
+  }
+  
+  div.x {
+    background: black;
+    width: calc(100% / 10);
+    height: 100px;
+    position: relative;
+    margin-left: 45px;
+    margin-top: 0px;
+    transform: rotate(45deg);
+  }
+  
+  div.x::after {
+    display: block;
+    background: black;
+    width: 10px;
+    height: 100%;
+    content: "";
+    transform: rotate(90deg);
+  }
+  
+  div.o {
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 60px;
+    height: 60px;
+    border: 10px solid black;
+    border-radius: 100%;
+  }
