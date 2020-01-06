@@ -1,6 +1,7 @@
 'use strict';
 
 const WebRoom = require('../..');
+const WebSocket = require("ws");
 
 class EchoWebRoom extends WebRoom.AbstractWebRoom
 {
@@ -8,9 +9,13 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     {
         super();
 
+        /** @type WebSocket[] */
         this._userList = [];
     }
 
+    /**
+     * @param {WebSocket} socket 
+     */
     join(socket)
     {
         this._userList.push(socket);
