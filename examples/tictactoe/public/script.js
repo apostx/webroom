@@ -1,71 +1,71 @@
 class TicTacToeView
 {
-  constructor(root, ticTacToeGame)
-  {
-    const table = this._table = document.createElement("div");
-    table.className = "tictactoe-table";
-    
-    const l = ticTacToeGame.length * ticTacToeGame.length;
-    
-    this._cellList = [];
-    this._cellList.length = l;
-    
-    this._ticTacToeGame = ticTacToeGame;
-    this._playerIndex = 0;
-    
-    for(let i = 0; i < l; i++)
+    constructor(root, ticTacToeGame)
     {
-      const cell = this._cellList[i] = document.createElement("div");
-      
-      cell.className = "tictactoe-cell";
-      cell.onclick = this._onClick.bind(this, i);
-      
-      table.appendChild(cell);
-    }
-    
-    root.appendChild(table);
-  }
-  
-  _onClick(i, e)
-  {
-    const cell = e.currentTarget;
-    
-    if (cell.innerHTML == "")
-    {
-      const className = this._playerIndex == 0 ? "o" : "x";
-      this._playerIndex = (this._playerIndex + 1) % 2;
-      cell.innerHTML = "<div class=\"" + className + "\"></div>";
-      
-      var isWin = this._ticTacToeGame.mark(i % 3, Math.floor(i / 3));
-      
-      if (isWin)
-      {
-        var cb = this._onWin.bind(this, this._ticTacToeGame.currentPlayer.toUpperCase());
+        const table = this._table = document.createElement("div");
+        table.className = "tictactoe-table";
         
-        window.requestAnimationFrame(window.requestAnimationFrame.bind(window, cb));
-      }
+        const l = ticTacToeGame.length * ticTacToeGame.length;
+        
+        this._cellList = [];
+        this._cellList.length = l;
+        
+        this._ticTacToeGame = ticTacToeGame;
+        this._playerIndex = 0;
+        
+        for(let i = 0; i < l; i++)
+        {
+            const cell = this._cellList[i] = document.createElement("div");
+            
+            cell.className = "tictactoe-cell";
+            cell.onclick = this._onClick.bind(this, i);
+            
+            table.appendChild(cell);
+        }
+        
+        root.appendChild(table);
     }
-  }
   
-  _onWin(winner)
-  {
-    alert("\"" + winner + "\" player won!");
-    
-    this.init();
-    this._ticTacToeGame.init("o", "x");
-  }
-  
-  init()
-  {
-    const cells = document.getElementsByClassName('cell');
-    
-    for(let i = 0; i < cells.length; i++)
+    _onClick(i, e)
     {
-      cells[i].innerHTML = "";
+        const cell = e.currentTarget;
+        
+        if (cell.innerHTML == "")
+        {
+            const className = this._playerIndex == 0 ? "o" : "x";
+            this._playerIndex = (this._playerIndex + 1) % 2;
+            cell.innerHTML = "<div class=\"" + className + "\"></div>";
+            
+            var isWin = this._ticTacToeGame.mark(i % 3, Math.floor(i / 3));
+            
+            if (isWin)
+            {
+                var cb = this._onWin.bind(this, this._ticTacToeGame.currentPlayer.toUpperCase());
+                
+                window.requestAnimationFrame(window.requestAnimationFrame.bind(window, cb));
+            }
+        }
     }
-    
-    this._playerIndex = 0;
-  }
+  
+    _onWin(winner)
+    {
+        alert("\"" + winner + "\" player won!");
+        
+        this.init();
+        this._ticTacToeGame.init("o", "x");
+    }
+  
+    init()
+    {
+        const cells = document.getElementsByClassName('cell');
+        
+        for(let i = 0; i < cells.length; i++)
+        {
+            cells[i].innerHTML = "";
+        }
+        
+        this._playerIndex = 0;
+    }
 }
 
 class TicTacToeGame
@@ -76,7 +76,7 @@ class TicTacToeGame
   
     get length()
     {
-      return this.constructor.LENGTH;
+        return TicTacToeGame.LENGTH;
     }
 
     get currentPlayer()
@@ -127,7 +127,7 @@ class TicTacToeGame
 
     _isWin(colIndex, rowIndex)
     {
-        return this.constructor.LENGTH <= Math.max(
+        return TicTacToeGame.LENGTH <= Math.max(
             this.calculateLineLength(colIndex, rowIndex, 1, 1),
             this.calculateLineLength(colIndex, rowIndex, 1, 0),
             this.calculateLineLength(colIndex, rowIndex, 1, -1),

@@ -10,6 +10,11 @@ const staticWebServer = new WebRoom.StaticWebServer(
     httpServer,
     [
         {filePath: "examples\\tictactoe\\public\\", requestUrl: "/"}
+    ],
+    [
+        {extension: ".html", mimeType: "text/html"},
+        {extension: ".css", mimeType: "text/css"},
+        {extension: ".js", mimeType: "application/javascript"}
     ]
 );
 
