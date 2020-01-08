@@ -9,6 +9,8 @@ const httpServer = http.createServer();
 const staticWebServer = new WebRoom.StaticWebServer(
     httpServer,
     [
+        {filePath: "examples\\tictactoe\\public\\index.html", requestUrl: "/"},
+        {filePath: "examples\\tictactoe\\public\\offline\\index.html", requestUrl: "/offline/"},
         {filePath: "examples\\tictactoe\\public\\", requestUrl: "/"}
     ],
     [
