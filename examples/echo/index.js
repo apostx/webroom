@@ -19,7 +19,7 @@ function buildServerEnvironment(port)
     const moduleContainer = WebRoom.ModuleUpdater.require(resolvedId);
 
     const webRoomServer = new WebRoom.Server(httpServer, wsServer, [{
-        type: "echo",
+        type: 'echo',
         moduleContainer: moduleContainer
     }]);
 
@@ -28,26 +28,26 @@ function buildServerEnvironment(port)
 
 function manageRoom(port, command, querry , msgLogPrefix, callback)
 {
-    const wsClient = new WebSocket("ws://127.0.0.1:" + port + "/" + command + "?" + querry);
+    const wsClient = new WebSocket(`ws://127.0.0.1:${port}/${command}?${querry}`);
 
-    wsClient.on("open", () => callback(wsClient));
-    wsClient.on("message", message => console.log(msgLogPrefix + message));
+    wsClient.on('open', () => callback(wsClient));
+    wsClient.on('message', message => console.log(`${msgLogPrefix}${message}`));
 }
 
 function sendHelloWorld(port)
 {
-    console.log("Master connecting...");
+    console.log('Master connecting...');
 
-    manageRoom(port, "create_room", "room_type=echo", "Received by Master: ", wsMasterClient => {
-        console.log("...Master connected");
-        console.log("Slave connecting...");
+    manageRoom(port, 'create_room', 'room_type=echo', 'Received by Master: ', wsMasterClient => {
+        console.log('...Master connected');
+        console.log('Slave connecting...');
 
-        manageRoom(port, "join_room", "room_id=0", "Received by Slave: ", wsSlaveClient => {
-            console.log("...Slave connected");
-            console.log("\"HelloWorld\" sent...");
+        manageRoom(port, 'join_room', 'room_id=0', 'Received by Slave: ', wsSlaveClient => {
+            console.log('...Slave connected');
+            console.log('"HelloWorld!" sent...');
 
-            wsMasterClient.send("HellowWorld! (Sent by Master)");
-            wsSlaveClient.send("HellowWorld! (Sent by Slave)");
+            wsMasterClient.send('HellowWorld! (Sent by Master)');
+            wsSlaveClient.send('HellowWorld! (Sent by Slave)');
         })
     });
 }
@@ -56,4 +56,4 @@ buildServerEnvironment(PORT);
 
 sendHelloWorld(PORT);
 
-console.log("Servers started");
+console.log('Servers started');

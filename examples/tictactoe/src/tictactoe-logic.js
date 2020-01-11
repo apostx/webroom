@@ -1,12 +1,15 @@
-class TicTacToeOfflineLogic
+'use strict';
+
+class TicTacToeLogic
 {
-    static get LENGTH() {
+    static get LENGTH()
+    {
         return 3;
     }
   
     get length()
     {
-        return TicTacToeOfflineLogic.LENGTH;
+        return TicTacToeLogic.LENGTH;
     }
 
     get currentPlayer()
@@ -35,12 +38,12 @@ class TicTacToeOfflineLogic
     {
         if (this._isEnded)
         {
-            throw "Invalid mark: dirty table (run the init before the next mark)";
+            throw 'Invalid mark: dirty table (run the init before the next mark)';
         }
 
         if (this._table.getField(colIndex, rowIndex) != undefined)
         {
-            throw "Invalid mark: field is already used";
+            throw 'Invalid mark: field is already used';
         }
 
         this._table.setField(colIndex, rowIndex, this._currentPlayer);
@@ -57,7 +60,7 @@ class TicTacToeOfflineLogic
 
     _isWin(colIndex, rowIndex)
     {
-        return TicTacToeOfflineLogic.LENGTH <= Math.max(
+        return TicTacToeLogic.LENGTH <= Math.max(
             this.calculateLineLength(colIndex, rowIndex, 1, 1),
             this.calculateLineLength(colIndex, rowIndex, 1, 0),
             this.calculateLineLength(colIndex, rowIndex, 1, -1),
@@ -130,3 +133,5 @@ class Table
         }
     }
 }
+
+if (typeof module === 'object' && module.exports) module.exports = TicTacToeLogic;

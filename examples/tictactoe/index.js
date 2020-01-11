@@ -1,23 +1,33 @@
-
 'use strict';
 
-const http = require("http");
+const http = require('http');
+const WebSocket = require('ws');
 const WebRoom = require('../..');
+const TicTacToeWebRoom = require('./src/tictactoe-webroom');
+
+const PORT = 8081;
 
 const httpServer = http.createServer();
+const wsServer = new WebSocket.Server({noServer: true});
+
+const webRoomServer = new WebRoom.Server(httpServer, wsServer, [{
+    type: 'tictactoe',
+    moduleContainer: {module: TicTacToeWebRoom}
+}]);
 
 const staticWebServer = new WebRoom.StaticWebServer(
-    httpServer,
+    webRoomServer,
     [
-        {filePath: "examples\\tictactoe\\public\\index.html", requestUrl: "/"},
-        {filePath: "examples\\tictactoe\\public\\offline\\index.html", requestUrl: "/offline/"},
-        {filePath: "examples\\tictactoe\\public\\", requestUrl: "/"}
+        {filePath: 'examples\\tictactoe\\src\\tictactoe-logic.js\\', requestUrl: '/tictactoe_logic.js'},
+        {filePath: 'examples\\tictactoe\\public\\index.html', requestUrl: '/'},
+        {filePath: 'examples\\tictactoe\\public\\offline\\index.html', requestUrl: '/offline/'},
+        {filePath: 'examples\\tictactoe\\public\\', requestUrl: '/'}
     ],
     [
-        {extension: ".html", mimeType: "text/html"},
-        {extension: ".css", mimeType: "text/css"},
-        {extension: ".js", mimeType: "application/javascript"}
+        {extension: '.html', mimeType: 'text/html'},
+        {extension: '.css', mimeType: 'text/css'},
+        {extension: '.js', mimeType: 'application/javascript'}
     ]
 );
 
-httpServer.listen(8081);
+httpServer.listen(PORT);

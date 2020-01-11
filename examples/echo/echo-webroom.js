@@ -1,7 +1,7 @@
 'use strict';
 
 const WebRoom = require('../..');
-const WebSocket = require("ws");
+const WebSocket = require('ws');
 
 class EchoWebRoom extends WebRoom.AbstractWebRoom
 {
@@ -20,7 +20,7 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     {
         this._userList.push(socket);
 
-        socket.on("message", this._onMessage.bind(this));
+        socket.on('message', this._onMessage.bind(this));
     }
 
     _onMessage(message)

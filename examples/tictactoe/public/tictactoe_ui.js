@@ -1,58 +1,79 @@
-class TicTacToeUI
+'use strict';
+
+class TicTacToeUI extends EventEmitter
 {
-    constructor(root, ticTacToeLogic)
+    constructor(root, size, title)
     {
-        const table = this._table = document.createElement("div");
-        table.className = "tictactoe-table";
+        super();
+
+        const table = this._table = document.createElement('div');
+        table.className = 'tictactoe-table';
         
-        const l = ticTacToeLogic.length * ticTacToeLogic.length;
+        const l = size * size;
         
         this._cellList = [];
         this._cellList.length = l;
-        
-        this._ticTacToeLogic = ticTacToeLogic;
         this._playerIndex = 0;
+        this._isTableLocked = false;
+
+        this._size = size;
         
         for(let i = 0; i < l; i++)
         {
-            const cell = this._cellList[i] = document.createElement("div");
+            const cell = this._cellList[i] = document.createElement('div');
             
-            cell.className = "tictactoe-cell";
+            cell.className = 'tictactoe-cell';
             cell.onclick = this._onClick.bind(this, i);
             
             table.appendChild(cell);
         }
+
+        const header = document.createElement('div');
+        header.className = 'header';
+        header.innerHTML = title;
+
+        this._infoBar = document.createElement('div');
+        this._infoBar.className = 'infobar';
         
+        const restartBtn = document.createElement('button');
+        restartBtn.className = 'restart_btn';
+        restartBtn.innerHTML = '&#11118;';
+        restartBtn.onclick = this.emit.bind(this, 'restart');
+        
+        root.appendChild(header);
+            
         root.appendChild(table);
+        root.appendChild(this._infoBar);
+        root.appendChild(restartBtn);
     }
   
     _onClick(i, e)
     {
         const cell = e.currentTarget;
         
-        if (cell.innerHTML == "")
-        {
-            const className = this._playerIndex == 0 ? "o" : "x";
-            this._playerIndex = (this._playerIndex + 1) % 2;
-            cell.innerHTML = "<div class=\"" + className + "\"></div>";
-            
-            var isWin = this._ticTacToeLogic.mark(i % 3, Math.floor(i / 3));
-            
-            if (isWin)
-            {
-                var cb = this._onWin.bind(this, this._ticTacToeLogic.currentPlayer.toUpperCase());
-                
-                window.requestAnimationFrame(window.requestAnimationFrame.bind(window, cb));
-            }
-        }
+        if (cell.innerHTML == '' && !this._isTableLocked) this.emit('mark', {
+            colIndex: i % this._size,
+            rowIndex: Math.floor(i / this._size)
+        });
     }
-  
-    _onWin(winner)
+
+    setField(colIndex, rowIndex)
     {
-        alert("\"" + winner + "\" player won!");
-        
-        this.init();
-        this._ticTacToeLogic.init("o", "x");
+        const cellIndex = rowIndex * this._size + colIndex;
+        const cell = this._cellList[cellIndex];
+        const className = this._playerIndex == 0 ? 'o' : 'x';
+        this._playerIndex = (this._playerIndex + 1) % 2;
+        cell.innerHTML = '<div class="' + className + '"></div>';
+    }
+
+    setTableLocked(locked)
+    {
+        this._isTableLocked = locked;
+    }
+
+    updateStatusInfo(infoText)
+    {
+        this._infoBar.innerHTML = infoText;
     }
   
     init()
@@ -65,5 +86,6 @@ class TicTacToeUI
         }
         
         this._playerIndex = 0;
+        this._isTableLocked = false;
     }
 }
