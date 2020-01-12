@@ -2,5 +2,5 @@ const assert = require('assert');
 
 describe('WebRoomServer', function()
 {
-    it.skip('Not tested module', function() {});
+    it('Not tested module');
 });
