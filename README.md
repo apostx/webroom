@@ -11,12 +11,12 @@ The webroom server collected the most common websocket related logics to help th
 
 ### WebRoom:
 
-This is the room logic which needs to be implement by the developer (see AbstractWebRoom)
+- This is the room logic which needs to be implement by the developer (see AbstractWebRoom)
 
 ### AbstractWebRoom:
 
-- get details(): Provides extra information in the room list service
-- get isHidden(): The current room will not be shown by the room list service
-- validateRequest(request): Can prevent to upgrade the http connection to websocket
-- join(socket): Here the WebRoom get the validated websocket connection
-- destroy(): Notifies the WebRoomServer about the lifetime of the current room is over so it can be destroyed
+- `get details()`: Provides extra information in the room list service
+- `get isHidden()`: The current room will not be shown by the room list service
+- `validateRequest(request)`: Can prevent to upgrade the http connection to websocket
+- `join(socket)`: Here the WebRoom get the validated websocket connection
+- `destroy()`: Notifies the WebRoomServer about the lifetime of the current room is over so it can be destroyed
