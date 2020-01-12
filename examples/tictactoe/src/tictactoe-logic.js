@@ -2,14 +2,19 @@
 
 class TicTacToeLogic
 {
-    static get LENGTH()
+    static get Status()
+    {
+        return Status;
+    }
+
+    static get SIZE()
     {
         return 3;
     }
   
-    get length()
+    get size()
     {
-        return TicTacToeLogic.LENGTH;
+        return TicTacToeLogic.SIZE;
     }
 
     get currentPlayer()
@@ -17,28 +22,30 @@ class TicTacToeLogic
         return this._currentPlayer;
     }
 
-    constructor(player1, player2)
+    constructor()
     {
         this._player1 = null;
         this._player2 = null;
         this._currentPlayer = null;
-        this._isEnded = true;
-        this._table = new Table(this.length);
+        this._markedFieldNum = 0;
+        this._table = new Table(this.size);
+        this._status = Status.IN_PROGRESS;
     }
 
     init(player1, player2)
     {
         this._player1 = this._currentPlayer = player1;
         this._player2 = player2;
-        this._isEnded = false;
+        this._status = Status.IN_PROGRESS;
+        this._markedFieldNum = 0;
         this._table.clear();
     }
 
     mark(colIndex, rowIndex)
     {
-        if (this._isEnded)
+        if (this._status != Status.IN_PROGRESS)
         {
-            throw 'Invalid mark: dirty table (run the init before the next mark)';
+            throw 'Invalid mark: game is already ended (run the init before the next mark)';
         }
 
         if (this._table.getField(colIndex, rowIndex) != undefined)
@@ -47,20 +54,30 @@ class TicTacToeLogic
         }
 
         this._table.setField(colIndex, rowIndex, this._currentPlayer);
+        ++this._markedFieldNum;
 
-        this._isEnded = this._isWin(colIndex, rowIndex);
+        const isWin = this._isWin(colIndex, rowIndex);
+        const isFull = this._markedFieldNum >= this.size * this.size;
 
-        if (!this._isEnded)
+        if (isWin)
+        {
+            this._status = Status.WIN;
+        }
+        else if (isFull)
+        {
+            this._status = Status.DRAW;
+        }
+        else
         {
             this._currentPlayer = this._currentPlayer != this._player1 ? this._player1 : this._player2;
         }
 
-        return this._isEnded;
+        return this._status;
     }
 
     _isWin(colIndex, rowIndex)
     {
-        return TicTacToeLogic.LENGTH <= Math.max(
+        return this.size <= Math.max(
             this.calculateLineLength(colIndex, rowIndex, 1, 1),
             this.calculateLineLength(colIndex, rowIndex, 1, 0),
             this.calculateLineLength(colIndex, rowIndex, 1, -1),
@@ -94,6 +111,13 @@ class TicTacToeLogic
 
         return l;
     }
+}
+
+class Status
+{
+    static get IN_PROGRESS() {return 'in_progress';}
+    static get WIN() {return 'win';}
+    static get DRAW() {return 'draw';}
 }
 
 class Table

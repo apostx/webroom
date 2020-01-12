@@ -49,12 +49,30 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
          */
         this._userList.push(socket);
 
+        socket.once('close', this._onSocketClose.bind(this, socket));
+
         if (this._userList.length == this.USER_LIMIT) this._startGame();
+    }
+
+    _onSocketClose(socket)
+    {
+        const isGameStarted = this._userList.length == this.USER_LIMIT;
+
+        const socketIndex = this._userList.indexOf(socket);
+        this._userList.splice(socketIndex, 1);
+
+        if (isGameStarted) this.destroy();
     }
 
     _startGame()
     {
         this._currentUserIndex = Math.floor(Math.random() * this.USER_LIMIT);
+
+        const player1 = this._userList[this._currentUserIndex];
+        const player2 = this._userList[(this._currentUserIndex + 1) % this.USER_LIMIT];
+
+        this._logic.init(player1, player2);
+
         this._nextTurn();
     }
 
@@ -63,22 +81,62 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         for (let i = 0; i < this.USER_LIMIT; ++i)
         {
             const socket = this._userList[i];
+            const isCurrentPlayerTurn = i == this._currentUserIndex;
 
-            socket.once('message', this._onMessage.bind(this));
+            if (isCurrentPlayerTurn) socket.once('message', this._onMarkMessage.bind(this));
 
             socket.send(JSON.stringify({
-                header: 'your_turn',
-                data: i == this._currentUserIndex
+                header: 'nextTurn',
+                data: {
+                    isYours: isCurrentPlayerTurn
+                }
             }));
         }
     }
 
-    _onMessage(message)
+    _onMarkMessage(message)
     {
-        /*for (var i = 0; i < this._userList.length; ++i)
+        const messageObj = JSON.parse(message);
+
+        if (messageObj.header == 'mark')
         {
-            this._userList[i].send(message);
-        }*/
+            const status = this._logic.mark(messageObj.data.colIndex, messageObj.data.rowIndex);
+
+            for (let i = 0; i < this._userList.length; ++i)
+            {
+                const socket = this._userList[i];
+
+                socket.send(JSON.stringify({
+                    header: 'mark',
+                    data: {
+                        isYou: i == this._currentUserIndex,
+                        colIndex: messageObj.data.colIndex,
+                        rowIndex: messageObj.data.rowIndex,
+                        status: status
+                    }
+                }));
+            }
+
+            if(status == TicTacToeLogic.Status.IN_PROGRESS)
+            {
+                this._currentUserIndex = (this._currentUserIndex + 1) % this.USER_LIMIT;
+                this._nextTurn();
+            }
+            else
+            {
+                this.destroy();
+            }
+        }
+        else
+        {
+            this.destroy();
+        }
+    }
+
+    destroy()
+    {
+        for (let i = 0; i < this._userList.length; ++i) this._userList[i].close();
+        super.destroy();
     }
 }
 

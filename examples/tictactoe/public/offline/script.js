@@ -12,21 +12,31 @@
         const x = fieldInfo.colIndex;
         const y = fieldInfo.rowIndex;
 
-        const isWin = ticTacToeLogic.mark(x, y);
+        const status = ticTacToeLogic.mark(x, y);
         ticTacToeUI.setField(x, y);
 
-        ticTacToeUI.updateStatusInfo(
-            isWin
-            ? `${ticTacToeLogic.currentPlayer} won!`
-            : `${ticTacToeLogic.currentPlayer}'s turn`
-        );
+        let statusInfo = null;
+        switch (status)
+        {
+            case TicTacToeLogic.Status.WIN:
+                statusInfo = `${ticTacToeLogic.currentPlayer} won!`;
+                break;
 
-        ticTacToeUI.setTableLocked(isWin);
+            case TicTacToeLogic.Status.DRAW:
+                statusInfo = `Draw!`;
+                break;
+
+            default:
+                statusInfo = `${ticTacToeLogic.currentPlayer}'s turn`;
+        }
+
+        ticTacToeUI.updateStatusInfo(statusInfo);
+        ticTacToeUI.setTableLocked(status != TicTacToeLogic.Status.IN_PROGRESS);
     });
 
     function init()
     {
-        ticTacToeLogic.init('O', 'X');
+        ticTacToeLogic.init('&#11093;', '&#10060;');
         ticTacToeUI.init();
         ticTacToeUI.updateStatusInfo(`${ticTacToeLogic.currentPlayer} starts`);
     }

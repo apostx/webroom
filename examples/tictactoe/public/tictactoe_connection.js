@@ -5,14 +5,49 @@ class TicTacToeConnection extends EventEmitter
     constructor()
     {
         super();
+        this._webSocket = null;
     }
 
-    startGame()
+    init()
     {
-        this._getGameServerUrl(function(url)
+        if (this._webSocket)
         {
-            const socket = new WebSocket(`ws://${location.host}/${url}`);
-        });
+            this._webSocket.onmessage = null;
+            this._webSocket.onclose = null;
+            this._webSocket.close();
+            this._webSocket = null;
+        }
+
+        this._getGameServerUrl(this._connectToGameServer.bind(this));
+    }
+
+    sendMark(colIndex, rowIndex)
+    {
+        this._webSocket.send(JSON.stringify({
+            header: 'mark',
+            data: {
+                colIndex: colIndex,
+                rowIndex: rowIndex
+            }
+        }));
+    }
+
+    _onMessage(event)
+    {
+        var messageObj = JSON.parse(event.data);
+        this.emit('message', messageObj);
+    }
+
+    _onclose(event)
+    {
+        this.emit('close');
+    }
+
+    _connectToGameServer(url)
+    {
+        this._webSocket = new WebSocket(`ws://${location.host}/${url}`);
+        this._webSocket.onmessage = this._onMessage.bind(this);
+        this._webSocket.onclose = this._onclose.bind(this);
     }
 
     _getGameServerUrl(cb)
