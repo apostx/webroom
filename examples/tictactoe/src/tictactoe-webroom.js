@@ -94,38 +94,58 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         }
     }
 
-    _onMarkMessage(message)
+    _validateTableIndex(index)
+    {
+        return Number.isInteger(index) && 0 <= index && index < this._logic.size; 
+    }
+
+    _parseMarkMessage(message)
     {
         const messageObj = JSON.parse(message);
 
-        if (messageObj.header == 'mark')
+        if (messageObj.header != 'mark') throw new Error('Invalid header');
+        if (!messageObj.data) throw new Error('Missing data object');
+        if (!this._validateTableIndex(messageObj.data.colIndex)) throw new Error('Invalid colIndex');
+        if (!this._validateTableIndex(messageObj.data.rowIndex)) throw new Error('Invalid rowIndex');
+
+        return messageObj;
+    }
+
+    _onMarkMessage(message)
+    {
+        let messageObj = null;
+        let status = null;
+        try
         {
-            const status = this._logic.mark(messageObj.data.colIndex, messageObj.data.rowIndex);
+            messageObj = this._parseMarkMessage(message);
+            status = this._logic.mark(messageObj.data.colIndex, messageObj.data.rowIndex);
+        }
+        catch(error)
+        {
+            console.log(error);
+            this.destroy();
+            return;
+        }
 
-            for (let i = 0; i < this._userList.length; ++i)
-            {
-                const socket = this._userList[i];
+        for (let i = 0; i < this._userList.length; ++i)
+        {
+            const socket = this._userList[i];
 
-                socket.send(JSON.stringify({
-                    header: 'mark',
-                    data: {
-                        isYou: i == this._currentUserIndex,
-                        colIndex: messageObj.data.colIndex,
-                        rowIndex: messageObj.data.rowIndex,
-                        status: status
-                    }
-                }));
-            }
+            socket.send(JSON.stringify({
+                header: 'mark',
+                data: {
+                    isYou: i == this._currentUserIndex,
+                    colIndex: messageObj.data.colIndex,
+                    rowIndex: messageObj.data.rowIndex,
+                    status: status
+                }
+            }));
+        }
 
-            if(status == TicTacToeLogic.Status.IN_PROGRESS)
-            {
-                this._currentUserIndex = (this._currentUserIndex + 1) % this.USER_LIMIT;
-                this._nextTurn();
-            }
-            else
-            {
-                this.destroy();
-            }
+        if(status == TicTacToeLogic.Status.IN_PROGRESS)
+        {
+            this._currentUserIndex = (this._currentUserIndex + 1) % this.USER_LIMIT;
+            this._nextTurn();
         }
         else
         {

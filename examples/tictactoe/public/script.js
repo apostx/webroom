@@ -7,7 +7,7 @@
     const ticTacToeConnection = new TicTacToeConnection();
     const ticTacToeUI = new TicTacToeUI(root, 3, 'Online Tic-Tac-Toe');
 
-    let gameStatus = null;
+    let isGameRunning = false;
 
     ticTacToeUI.on('mark', function(fieldInfo)
     {
@@ -17,6 +17,8 @@
 
     ticTacToeConnection.on('message', function(messageObj)
     {
+        isGameRunning = true;
+
         switch(messageObj.header)
         {
             case 'nextTurn':
@@ -34,14 +36,16 @@
 
                 const isYou = messageObj.data.isYou;
                 let statusInfo = null;
-                gameStatus = messageObj.data.status;
-                switch(gameStatus)
+
+                switch(messageObj.data.status)
                 {
                     case 'win':
+                        isGameRunning = false;
                         statusInfo = `${messageObj.data.isYou ? 'You' : 'Your Opponent'} Won!`;
                         break;
 
                     case 'draw':
+                        isGameRunning = false;
                         statusInfo = 'Draw!';
                         break;
 
@@ -56,16 +60,17 @@
 
     ticTacToeConnection.on('close', function()
     {
-        if (gameStatus == 'in_progress' || gameStatus == null)
+        if (isGameRunning)
         {
-            ticTacToeUI.updateStatusInfo('Game ended by network issues...');
+            ticTacToeUI.updateStatusInfo('Game ended by network issue...');
             ticTacToeUI.setTableLocked(true);
-            gameStatus = null;
         }
     });
 
     function init()
     {
+        isGameRunning = false;
+
         ticTacToeConnection.init();
         ticTacToeUI.init();
 
