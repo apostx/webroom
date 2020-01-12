@@ -41,12 +41,6 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
      */
     join(socket)
     {
-        /**
-         * TODO
-         * listening the disconnected socket
-         * -before the game - should check the room is empty and destroy the room if it is
-         * -during the game - giving the point for the player
-         */
         this._userList.push(socket);
 
         socket.once('close', this._onSocketClose.bind(this, socket));
@@ -94,19 +88,14 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         }
     }
 
-    _validateTableIndex(index)
-    {
-        return Number.isInteger(index) && 0 <= index && index < this._logic.size; 
-    }
-
     _parseMarkMessage(message)
     {
         const messageObj = JSON.parse(message);
 
         if (messageObj.header != 'mark') throw new Error('Invalid header');
         if (!messageObj.data) throw new Error('Missing data object');
-        if (!this._validateTableIndex(messageObj.data.colIndex)) throw new Error('Invalid colIndex');
-        if (!this._validateTableIndex(messageObj.data.rowIndex)) throw new Error('Invalid rowIndex');
+        if (!Number.isInteger(messageObj.data.colIndex)) throw new Error('Invalid colIndex type');
+        if (!Number.isInteger(messageObj.data.rowIndex)) throw new Error('Invalid rowIndex type');
 
         return messageObj;
     }

@@ -32,6 +32,10 @@ class TicTacToeLogic
         this._status = Status.IN_PROGRESS;
     }
 
+    /**
+     * @param {*} player1 
+     * @param {*} player2 
+     */
     init(player1, player2)
     {
         this._player1 = this._currentPlayer = player1;
@@ -41,7 +45,11 @@ class TicTacToeLogic
         this._table.clear();
     }
 
-    mark(colIndex, rowIndex)
+    /**
+     * @param {number} colIndex 
+     * @param {number} rowIndex 
+     */
+    _validateMark(colIndex, rowIndex)
     {
         if (this._status != Status.IN_PROGRESS)
         {
@@ -52,6 +60,25 @@ class TicTacToeLogic
         {
             throw 'Invalid mark: field is already used';
         }
+
+        if (colIndex < 0 || colIndex >= this.size)
+        {
+            throw 'Invalid mark: colIndex is out of table';
+        }
+
+        if (rowIndex < 0 || rowIndex >= this.size)
+        {
+            throw 'Invalid mark: rowIndex is out of table';
+        }
+    }
+
+    /**
+     * @param {number} colIndex 
+     * @param {number} rowIndex 
+     */
+    mark(colIndex, rowIndex)
+    {
+        this._validateMark(colIndex, rowIndex);
 
         this._table.setField(colIndex, rowIndex, this._currentPlayer);
         ++this._markedFieldNum;
@@ -78,19 +105,19 @@ class TicTacToeLogic
     _isWin(colIndex, rowIndex)
     {
         return this.size <= Math.max(
-            this.calculateLineLength(colIndex, rowIndex, 1, 1),
-            this.calculateLineLength(colIndex, rowIndex, 1, 0),
-            this.calculateLineLength(colIndex, rowIndex, 1, -1),
-            this.calculateLineLength(colIndex, rowIndex, 0, -1),
+            this._calculateLineLength(colIndex, rowIndex, 1, 1),
+            this._calculateLineLength(colIndex, rowIndex, 1, 0),
+            this._calculateLineLength(colIndex, rowIndex, 1, -1),
+            this._calculateLineLength(colIndex, rowIndex, 0, -1),
         );
     }
 
-    calculateLineLength(colIndex, rowIndex, colStep, rowStep)
+    _calculateLineLength(colIndex, rowIndex, colStep, rowStep)
     {
-        return this.calculateDirectionLength(colIndex, rowIndex, colStep, rowStep) + this.calculateDirectionLength(colIndex, rowIndex, -colStep, -rowStep) + 1;
+        return this._calculateDirectionLength(colIndex, rowIndex, colStep, rowStep) + this._calculateDirectionLength(colIndex, rowIndex, -colStep, -rowStep) + 1;
     }
 
-    calculateDirectionLength(colIndex, rowIndex, colStep, rowStep)
+    _calculateDirectionLength(colIndex, rowIndex, colStep, rowStep)
     {
         let l = 0;
         let i = colIndex + colStep;
