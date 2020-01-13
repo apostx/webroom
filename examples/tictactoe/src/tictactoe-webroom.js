@@ -44,6 +44,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         this._userList.push(socket);
 
         socket.once('close', this._onSocketClose.bind(this, socket));
+        socket.once('error', this._onSocketClose.bind(this, socket));
 
         if (this._userList.length == this.USER_LIMIT) this._startGame();
     }
@@ -144,7 +145,12 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
 
     destroy()
     {
-        for (let i = 0; i < this._userList.length; ++i) this._userList[i].close();
+        for (let i = 0; i < this._userList.length; ++i)
+        {
+            const socket = this._userList[i]
+            socket.removeAllListeners();
+            socket.close();
+        }
         super.destroy();
     }
 }
