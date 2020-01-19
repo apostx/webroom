@@ -10,10 +10,16 @@ const PORT = 8081;
 const httpServer = http.createServer();
 const wsServer = new WebSocket.Server({noServer: true});
 
-const webRoomServer = new WebRoom.Server(httpServer, wsServer, [{
-    type: 'tictactoe',
-    moduleContainer: {module: TicTacToeWebRoom}
-}]);
+const webRoomServer = new WebRoom.Server({
+    http: {
+        httpServer: httpServer,
+        wsServer: wsServer
+    }, 
+    roomTypeList: [{
+        type: 'tictactoe',
+        moduleContainer: {module: TicTacToeWebRoom}
+    }]
+});
 
 const staticWebServer = new WebRoom.StaticWebServer(
     webRoomServer,

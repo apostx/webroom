@@ -1,9 +1,12 @@
 'use strict';
 
-const http = require('http');
 const WebRoom = require('../../..');
-const WebSocket = require('ws');
 const TicTacToeLogic = require('./tictactoe-logic');
+
+/**
+ * @typedef {import('http').IncomingMessage} IncomingMessage
+ * @typedef {import('../../../lib/abstract-webroom').UnifiedSocket} UnifiedSocket
+ */
 
 class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
 {
@@ -21,7 +24,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     {
         super();
 
-        /** @type WebSocket[] */
+        /** @type UnifiedSocket[] */
         this._userList = [];
         this._currentUserIndex = 0;
 
@@ -29,7 +32,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     }
 
     /**
-     * @param {http.IncomingMessage} request
+     * @param {IncomingMessage} request
      */
     validateRequest(request)
     {
@@ -37,7 +40,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     }
 
     /**
-     * @param {WebSocket} socket 
+     * @param {UnifiedSocket} socket
      */
     join(socket)
     {
@@ -78,9 +81,9 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
             const socket = this._userList[i];
             const isCurrentPlayerTurn = i == this._currentUserIndex;
 
-            if (isCurrentPlayerTurn) socket.once('message', this._onMarkMessage.bind(this));
+            if (isCurrentPlayerTurn) socket.once('data', this._onMarkMessage.bind(this));
 
-            socket.send(JSON.stringify({
+            socket.write(JSON.stringify({
                 header: 'nextTurn',
                 data: {
                     isYours: isCurrentPlayerTurn
@@ -121,7 +124,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             const socket = this._userList[i];
 
-            socket.send(JSON.stringify({
+            socket.write(JSON.stringify({
                 header: 'mark',
                 data: {
                     isYou: i == this._currentUserIndex,
@@ -149,7 +152,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             const socket = this._userList[i]
             socket.removeAllListeners();
-            socket.close();
+            socket.end();
         }
         super.destroy();
     }

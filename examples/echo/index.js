@@ -18,10 +18,16 @@ function buildServerEnvironment(port)
     // dynamic way
     const moduleContainer = WebRoom.ModuleUpdater.require(resolvedId);
 
-    const webRoomServer = new WebRoom.Server(httpServer, wsServer, [{
-        type: 'echo',
-        moduleContainer: moduleContainer
-    }]);
+    const webRoomServer = new WebRoom.Server({
+        http: {
+            httpServer: httpServer,
+            wsServer: wsServer
+        }, 
+        roomTypeList: [{
+            type: 'echo',
+            moduleContainer: moduleContainer
+        }]
+    });
 
     httpServer.listen(PORT);    
 }

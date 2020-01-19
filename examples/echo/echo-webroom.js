@@ -1,7 +1,10 @@
 'use strict';
 
 const WebRoom = require('../..');
-const WebSocket = require('ws');
+
+/**
+ * @typedef {import('../../lib/abstract-webroom').UnifiedSocket} UnifiedSocket
+ */
 
 class EchoWebRoom extends WebRoom.AbstractWebRoom
 {
@@ -9,12 +12,12 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     {
         super();
 
-        /** @type WebSocket[] */
+        /** @type UnifiedSocket[] */
         this._userList = [];
     }
 
     /**
-     * @param {WebSocket} socket 
+     * @param {UnifiedSocket} socket 
      */
     join(socket)
     {
@@ -27,7 +30,7 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     {
         for (var i = 0; i < this._userList.length; ++i)
         {
-            this._userList[i].send(message);
+            this._userList[i].write(message);
         }
     }
 }
