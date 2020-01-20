@@ -32,24 +32,24 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     }
 
     /**
-     * @param {IncomingMessage} request
-     */
-    validateRequest(request)
-    {
-        return !this.isHidden;
-    }
-
-    /**
      * @param {UnifiedSocket} socket
+     * @returns {boolean}
      */
     join(socket)
     {
-        this._userList.push(socket);
+        const isRoomNotFull = !this.isHidden;
 
-        socket.once('close', this._onSocketClose.bind(this, socket));
-        socket.once('error', this._onSocketClose.bind(this, socket));
+        if (isRoomNotFull)
+        {
+            this._userList.push(socket);
 
-        if (this._userList.length == this.USER_LIMIT) this._startGame();
+            socket.once('close', this._onSocketClose.bind(this, socket));
+            socket.once('error', this._onSocketClose.bind(this, socket));
+
+            if (this._userList.length == this.USER_LIMIT) this._startGame();
+        }
+
+        return isRoomNotFull;
     }
 
     _onSocketClose(socket)

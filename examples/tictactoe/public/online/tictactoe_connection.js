@@ -38,7 +38,7 @@ class TicTacToeConnection extends EventEmitter
         this.emit('message', messageObj);
     }
 
-    _onclose(event)
+    _onClose(event)
     {
         this.emit('close');
     }
@@ -47,7 +47,7 @@ class TicTacToeConnection extends EventEmitter
     {
         this._webSocket = new WebSocket(`ws://${location.host}/${url}`);
         this._webSocket.onmessage = this._onMessage.bind(this);
-        this._webSocket.onclose = this._onclose.bind(this);
+        this._webSocket.onclose = this._onClose.bind(this);
     }
 
     _getGameServerUrl(cb)

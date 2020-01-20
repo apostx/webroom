@@ -17,13 +17,16 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     }
 
     /**
-     * @param {UnifiedSocket} socket 
+     * @param {UnifiedSocket} socket
+     * @returns {boolean}
      */
     join(socket)
     {
         this._userList.push(socket);
 
         socket.on('message', this._onMessage.bind(this));
+
+        return true;
     }
 
     _onMessage(message)
