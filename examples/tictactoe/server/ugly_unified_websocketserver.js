@@ -1,7 +1,6 @@
 'use strict';
 
 const url = require('url');
-const querystring = require('querystring');
 const events = require('events');
 const WebRoom = require('../../..');
 
@@ -42,7 +41,6 @@ class UglyUnifiedWebSocketServer extends events.EventEmitter
     _handleUpgrade(request, socket, head)
     {
         const urlObj = url.parse(request.url);
-        const query = querystring.decode(urlObj.query);
 
         if (urlObj.pathname == '/') this._wsServer.handleUpgrade(request, socket, head, this._handleUpgradeEnd);
     }

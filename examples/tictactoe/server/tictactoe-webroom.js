@@ -1,7 +1,7 @@
 'use strict';
 
 const WebRoom = require('../../..');
-const TicTacToeLogic = require('./tictactoe-logic');
+const TicTacToeLogic = require('../shared/tictactoe-logic');
 
 /**
  * @typedef {import('http').IncomingMessage} IncomingMessage
