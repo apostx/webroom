@@ -40,6 +40,7 @@ const staticWebServer = new WebRoom.StaticWebServer(
     webRoomServer,
     [
         {filePath: `${ticTacToePath}\\shared\\tictactoe-logic.js\\`, requestUrl: '/shared/tictactoe_logic.js'},
+        {filePath: `${ticTacToePath}\\clients\\shared\\tictactoe-unifiedconnection.js\\`, requestUrl: '/shared/tictactoe_unifiedconnection.js'},
         {filePath: `${webPath}\\online\\index.html`, requestUrl: '/'},
         {filePath: `${webPath}\\online\\index.html`, requestUrl: '/online/'},
         {filePath: `${webPath}\\online_v2\\index.html`, requestUrl: '/online_v2/'},

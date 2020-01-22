@@ -4,7 +4,11 @@
 {
     const root = document.getElementById('root')
 
-    const ticTacToeConnection = new TicTacToeConnection();
+    const ticTacToeConnection = new TicTacToeUnifiedConnection(() => {
+        const webSocket = new WebSocket(`ws://${location.host}/`);
+        return new WebSocketUnifiedAdapter(webSocket);
+    });
+
     const ticTacToeUI = new TicTacToeUI(root, 3, 'Online Tic-Tac-Toe');
 
     let isGameRunning = false;
@@ -15,33 +19,12 @@
         ticTacToeUI.setTableLocked(true);
     });
 
-    ticTacToeConnection.on('message', function(messageObj)
+    ticTacToeConnection.onmessage = function(messageObj)
     {
         isGameRunning = true;
 
         switch(messageObj.header)
         {
-            case 'room_list':
-                const roomList = messageObj.data.roomList;
-                if (roomList.length > 0)
-                {
-                    ticTacToeConnection.joinRoom(roomList[0].id);
-                }
-                else
-                {
-                    ticTacToeConnection.createAndJoinRoom();
-                }
-                break;
-
-            case 'join_room':
-                const isJoined = messageObj.data.isJoined;
-                
-                if (!isJoined)
-                {
-                    ticTacToeConnection.getRoomList();
-                }
-                break;
-
             case 'nextTurn':
                 const isYourTurn = messageObj.data.isYours;
                 ticTacToeUI.updateStatusInfo(
@@ -55,7 +38,6 @@
             case 'mark':
                 ticTacToeUI.setField(messageObj.data.colIndex, messageObj.data.rowIndex);
 
-                const isYou = messageObj.data.isYou;
                 let statusInfo = null;
 
                 switch(messageObj.data.status)
@@ -77,16 +59,16 @@
                 ticTacToeUI.updateStatusInfo(statusInfo);
                 break;
         }
-    });
+    };
 
-    ticTacToeConnection.on('close', function()
+    ticTacToeConnection.onclose = function()
     {
         if (isGameRunning)
         {
             ticTacToeUI.updateStatusInfo('Game ended by network issue...');
             ticTacToeUI.setTableLocked(true);
         }
-    });
+    };
 
     function init()
     {
