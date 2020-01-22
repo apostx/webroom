@@ -43,7 +43,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             this._userList.push(socket);
 
-            socket.once('close', this._onSocketClose.bind(this, socket));
+            socket.once('end', this._onSocketClose.bind(this, socket));
             socket.once('error', this._onSocketClose.bind(this, socket));
 
             if (this._userList.length == this.USER_LIMIT) this._startGame();
