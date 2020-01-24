@@ -33,7 +33,7 @@ class EchoWebRoom extends WebRoom.AbstractWebRoom
     {
         for (var i = 0; i < this._userList.length; ++i)
         {
-            this._userList[i].write(message);
+            this._userList[i].send(message);
         }
     }
 }

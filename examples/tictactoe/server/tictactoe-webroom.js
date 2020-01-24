@@ -43,7 +43,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             this._userList.push(socket);
 
-            socket.once('end', this._onSocketClose.bind(this, socket));
+            socket.once('close', this._onSocketClose.bind(this, socket));
             socket.once('error', this._onSocketClose.bind(this, socket));
 
             if (this._userList.length == this.USER_LIMIT) this._startGame();
@@ -81,9 +81,9 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
             const socket = this._userList[i];
             const isCurrentPlayerTurn = i == this._currentUserIndex;
 
-            if (isCurrentPlayerTurn) socket.once('data', this._onMarkMessage.bind(this));
+            if (isCurrentPlayerTurn) socket.once('message', this._onMarkMessage.bind(this));
 
-            socket.write(JSON.stringify({
+            socket.send(JSON.stringify({
                 header: 'nextTurn',
                 data: {
                     isYours: isCurrentPlayerTurn
@@ -124,7 +124,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             const socket = this._userList[i];
 
-            socket.write(JSON.stringify({
+            socket.send(JSON.stringify({
                 header: 'mark',
                 data: {
                     isYou: i == this._currentUserIndex,
@@ -152,7 +152,7 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
         {
             const socket = this._userList[i]
             socket.removeAllListeners();
-            socket.end();
+            socket.close();
         }
         super.destroy();
     }

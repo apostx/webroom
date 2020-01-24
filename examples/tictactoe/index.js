@@ -1,20 +1,19 @@
 'use strict';
 
+const url = require('url');
 const net = require('net');
 const http = require('http');
 const WebSocket = require('ws');
 const WebRoom = require('../..');
 const TicTacToeWebRoom = require('./server/tictactoe-webroom');
-const UglyUnifiedWebSocketServer = require('./server/ugly_unified_websocketserver');
 
 const HTTP_PORT = 8081;
 const TCP_PORT = 511;
 
 const httpServer = http.createServer();
 const wsServer = new WebSocket.Server({noServer: true});
-
-const uglyUnifiedWebSocketServer = new UglyUnifiedWebSocketServer(wsServer);
-const unifiedTcpSocketServer = new net.Server();
+const socketServer = new net.Server();
+const unifiedSocketServer = new WebRoom.SocketServerUnifiedAdapter(socketServer);
 
 const webRoomServer = new WebRoom.Server({
     http: {
@@ -22,8 +21,8 @@ const webRoomServer = new WebRoom.Server({
         wsServer: wsServer
     },
     unifiedServerList: [
-        uglyUnifiedWebSocketServer,
-        unifiedTcpSocketServer
+        wsServer,
+        unifiedSocketServer
     ],
     roomTypeList: [{
         type: 'tictactoe',
@@ -31,7 +30,16 @@ const webRoomServer = new WebRoom.Server({
     }]
 });
 
-uglyUnifiedWebSocketServer.setHttpServer(webRoomServer);
+webRoomServer.on('upgrade', (request, socket, head) => {
+    const urlObj = url.parse(request.url);
+    if (urlObj.pathname == '/')
+    {
+        wsServer.handleUpgrade(request, socket, head, (webSocket) => {
+            wsServer.emit('connection', webSocket);
+        });
+    }
+});
+
 
 const ticTacToePath = 'examples\\tictactoe';
 const webPath = `${ticTacToePath}\\clients\\web`;
@@ -58,4 +66,4 @@ const staticWebServer = new WebRoom.StaticWebServer(
 );
 
 httpServer.listen(HTTP_PORT);
-unifiedTcpSocketServer.listen(TCP_PORT);
+socketServer.listen(TCP_PORT);

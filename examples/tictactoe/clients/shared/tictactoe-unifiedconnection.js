@@ -14,7 +14,7 @@
 class TicTacToeUnifiedConnection
 {
     /**
-     * @param {()=>UnifiedSocket} createUnifiedSocket 
+     * @param {() => UnifiedSocket} createUnifiedSocket 
      */
     constructor(createUnifiedSocket)
     {
@@ -34,36 +34,36 @@ class TicTacToeUnifiedConnection
 
         // Bind
         this._requestRoomList = this._requestRoomList.bind(this);
-        this._onData = this._onData.bind(this);
+        this._onMessage = this._onMessage.bind(this);
         this._onError = this._onError.bind(this);
-        this._onEnd = this._onEnd.bind(this);
+        this._onClose = this._onClose.bind(this);
     }
 
     init()
     {
         if (this._socket)
         {
-            this._socket.off('connect', this._requestRoomList);
-            this._socket.off('data', this._onData);
+            this._socket.off('open', this._requestRoomList);
+            this._socket.off('message', this._onMessage);
             this._socket.off('error', this._onError);
-            this._socket.off('end', this._onEnd);
+            this._socket.off('close', this._onClose);
 
-            this._socket.end();
+            this._socket.close();
             
             this._socket = null;
         }
 
         this._socket = this._createUnifiedSocket();
         
-        this._socket.on('connect', this._requestRoomList);
-        this._socket.on('data', this._onData);
-        this._socket.on('error', this._onEnd);
-        this._socket.on('end', this._onEnd)
+        this._socket.on('open', this._requestRoomList);
+        this._socket.on('message', this._onMessage);
+        this._socket.on('error', this._onError);
+        this._socket.on('close', this._onClose)
     }
 
     _requestRoomList()
     {
-        this._socket.write(JSON.stringify({
+        this._socket.send(JSON.stringify({
             header: 'get_room_list',
             data: {
                 roomType: 'tictactoe'
@@ -73,7 +73,7 @@ class TicTacToeUnifiedConnection
 
     sendMark(colIndex, rowIndex)
     {
-        this._socket.write(JSON.stringify({
+        this._socket.send(JSON.stringify({
             header: 'mark',
             data: {
                 colIndex: colIndex,
@@ -84,7 +84,7 @@ class TicTacToeUnifiedConnection
 
     _joinRoom(roomId)
     {
-        this._socket.write(JSON.stringify({
+        this._socket.send(JSON.stringify({
             header: 'join_room',
             data: {
                 roomId: roomId
@@ -94,7 +94,7 @@ class TicTacToeUnifiedConnection
 
     _createAndJoinRoom()
     {
-        this._socket.write(JSON.stringify({
+        this._socket.send(JSON.stringify({
             header: 'create_room',
             data: {
                 roomType: 'tictactoe'
@@ -102,7 +102,7 @@ class TicTacToeUnifiedConnection
         }));
     }
 
-    _onData(event)
+    _onMessage(event)
     {
         /** @type Message */
         var messageObj = JSON.parse(event);
@@ -133,7 +133,7 @@ class TicTacToeUnifiedConnection
         this.onerror && this.onerror(error);
     }
 
-    _onEnd()
+    _onClose()
     {
         this.onclose && this.onclose();
     }

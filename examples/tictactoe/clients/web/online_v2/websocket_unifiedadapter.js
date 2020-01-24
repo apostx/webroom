@@ -24,7 +24,7 @@ class WebSocketUnifiedAdapter extends EventEmitter
          */
         _onOpen(event)
         {
-            this.emit('connect');
+            this.emit('open');
         }
 
         /**
@@ -32,7 +32,7 @@ class WebSocketUnifiedAdapter extends EventEmitter
          */
         _onMessage(event)
         {
-            this.emit('data', event.data);
+            this.emit('message', event.data);
         }
 
         /**
@@ -40,18 +40,18 @@ class WebSocketUnifiedAdapter extends EventEmitter
          */
         _onClose(event)
         {
-            this.emit('end');
+            this.emit('close');
         }
 
         /**
          * @param {string} data
          */
-        write(data)
+        send(data)
         {
             this._webSocket.send(data);
         }
 
-        end()
+        close()
         {
             this._webSocket.close();
         }

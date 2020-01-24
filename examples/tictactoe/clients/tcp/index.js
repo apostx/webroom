@@ -3,11 +3,15 @@
 const net = require('net');
 const TicTacToeUnifiedConnection = require('../shared/tictactoe-unifiedconnection');
 const TicTacToeUI = require('./tictactoe-ui');
+const WebRoom = require('../../../../');
 
 const ticTacToeConnection = new TicTacToeUnifiedConnection(() => {
     const socket = new net.Socket();
+    const unifiedSocket = new WebRoom.SocketUnifiedAdapter(socket);
+    
     socket.connect(511);
-    return socket;
+    
+    return unifiedSocket;
 });
 
 const ticTacToeUI = new TicTacToeUI(3);
