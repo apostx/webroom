@@ -35,21 +35,22 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
      * @param {UnifiedSocket} socket
      * @returns {boolean}
      */
+    canJoin(socket)
+    {
+        return !this.isHidden;
+    }
+
+    /**
+     * @param {UnifiedSocket} socket
+     */
     join(socket)
     {
-        const isRoomNotFull = !this.isHidden;
+        this._userList.push(socket);
 
-        if (isRoomNotFull)
-        {
-            this._userList.push(socket);
+        socket.once('close', this._onSocketClose.bind(this, socket));
+        socket.once('error', this._onSocketClose.bind(this, socket));
 
-            socket.once('close', this._onSocketClose.bind(this, socket));
-            socket.once('error', this._onSocketClose.bind(this, socket));
-
-            if (this._userList.length == this.USER_LIMIT) this._startGame();
-        }
-
-        return isRoomNotFull;
+        if (this._userList.length == this.USER_LIMIT) this._startGame();
     }
 
     _onSocketClose(socket)
@@ -150,7 +151,8 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     {
         for (let i = 0; i < this._userList.length; ++i)
         {
-            const socket = this._userList[i]
+            //TODO Remove listeners on the proper way
+            const socket = this._userList[i];
             socket.removeAllListeners();
             socket.close();
         }

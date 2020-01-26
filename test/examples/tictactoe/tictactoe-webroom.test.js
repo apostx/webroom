@@ -164,13 +164,18 @@ describe('TicTacToeWebRoom [Integration Testing]', function()
                 .then(() => {
                     sendMessage(sockets[0], {header: 'create_room', data: {roomType: 'tictactoe'}});
                     sendMessage(sockets[1], {header: 'get_room_list', data: {roomType: 'tictactoe'}});
-                    return waitForMessage(sockets[1], 'room_list');
+                    return Promise.all([
+                        waitForMessage(sockets[0], 'join_room'),
+                        waitForMessage(sockets[1], 'room_list')
+                    ]);
                 })
                 .then((data) => {
-                    sendMessage(sockets[1], {header: 'join_room', data: {roomId: data.roomList[0].id}});
+                    sendMessage(sockets[1], {header: 'join_room', data: {roomId: data[1].roomList[0].id}});
                     return Promise.all([
                         waitForMessage(sockets[0], 'nextTurn'),
-                        waitForMessage(sockets[1], 'nextTurn')
+                        waitForMessage(sockets[1], 'join_room', (data, resolve, reject) => {
+                            waitForMessage(sockets[1], 'nextTurn').then(resolve);
+                        })
                     ]);
                 })
                 .then((data) => {
