@@ -1,5 +1,5 @@
 const assert = require('assert');
-const TicTacToeLogic = require('../../../examples/tictactoe/src/tictactoe-logic');
+const TicTacToeLogic = require('../../../examples/tictactoe/shared/tictactoe-logic');
 
 describe('TicTacToeLogic [Unit Testing]', function()
 {
