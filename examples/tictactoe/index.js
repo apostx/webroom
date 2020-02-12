@@ -3,6 +3,7 @@
 const url = require('url');
 const net = require('net');
 const http = require('http');
+const StaticWebServer = require('static-webserver');
 const WebSocket = require('ws');
 const WebRoom = require('../..');
 const TicTacToeWebRoom = require('./server/tictactoe-webroom');
@@ -44,7 +45,7 @@ webRoomServer.on('upgrade', (request, socket, head) => {
 const ticTacToePath = 'examples\\tictactoe';
 const webPath = `${ticTacToePath}\\clients\\web`;
 
-const staticWebServer = new WebRoom.StaticWebServer(
+const staticWebServer = new StaticWebServer(
     webRoomServer,
     [
         {filePath: `${ticTacToePath}\\shared\\tictactoe-logic.js\\`, requestUrl: '/shared/tictactoe_logic.js'},
