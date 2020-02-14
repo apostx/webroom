@@ -4,13 +4,13 @@
     "version": "0.0.1",
     "author": "apostx",
     "license": "MIT",
-    "repository": "github:apostx/webroom",
+    "repository": "github:apostx/webroom-js",
     "dependencies": {
         "ws": "7.2.0"
     },
     "devDependencies": {
         "mocha": "7.0.0",
-        "static-webserver": "https://github.com/apostx/static-webserver.git"
+        "static-webserver": "https://github.com/apostx/static-webserver-js.git"
     },
     "scripts": {
         "test": "mocha --recursive"
