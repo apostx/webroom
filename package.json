@@ -13,10 +13,11 @@
         "static-webserver": "https://github.com/apostx/static-webserver-js.git"
     },
     "scripts": {
-        "test": "mocha --recursive"
+        "test": "mocha --recursive",
+        "start": "node ./examples/demo/index.js"
     },
     "engines": {
-        "node": ">= 0.10.0"
+        "node": ">=8.3.0"
     },
     "files": [
         "LICENSE",
