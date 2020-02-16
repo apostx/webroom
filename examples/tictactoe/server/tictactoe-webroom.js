@@ -6,6 +6,7 @@ const TicTacToeLogic = require('../shared/tictactoe-logic');
 /**
  * @typedef {import('http').IncomingMessage} IncomingMessage
  * @typedef {import('../../../lib/abstract-webroom').UnifiedSocket} UnifiedSocket
+ * @typedef {import('../../../lib/unifiedsocket-eventtarget')} UnifiedSocketEventTarget
  */
 
 class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
@@ -17,15 +18,18 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
 
     get isHidden()
     {
-        return this._userList.length >= this.USER_LIMIT;
+        return this._playerList.length >= this.USER_LIMIT;
     }
 
     constructor()
     {
         super();
 
-        /** @type UnifiedSocket[] */
-        this._userList = [];
+        //Bind
+        this._onMarkMessage = this._onMarkMessage.bind(this);
+
+        /** @type WebRoom.UnifiedSocketEventTarget[] */
+        this._playerList = [];
         this._currentUserIndex = 0;
 
         this._logic = new TicTacToeLogic();
@@ -45,20 +49,27 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
      */
     join(socket)
     {
-        this._userList.push(socket);
+        const socketEventTarget = new WebRoom.UnifiedSocketEventTarget(socket);
 
-        socket.once('close', this._onSocketClose.bind(this, socket));
-        socket.once('error', this._onSocketClose.bind(this, socket));
+        this._playerList.push(socketEventTarget);
 
-        if (this._userList.length == this.USER_LIMIT) this._startGame();
+        const onConnectionEnd = this._onConnectionEnd.bind(this, socketEventTarget);
+
+        socketEventTarget.onClose = onConnectionEnd;
+        socketEventTarget.onError = onConnectionEnd;
+
+        if (this._playerList.length == this.USER_LIMIT) this._startGame();
     }
 
-    _onSocketClose(socket)
+    /**
+     * @param {WebRoom.UnifiedSocketEventTarget} socketEventTarget 
+     */
+    _onConnectionEnd(socketEventTarget)
     {
-        const isGameStarted = this._userList.length == this.USER_LIMIT;
+        const isGameStarted = this._playerList.length == this.USER_LIMIT;
 
-        const socketIndex = this._userList.indexOf(socket);
-        this._userList.splice(socketIndex, 1);
+        const socketIndex = this._playerList.indexOf(socketEventTarget);
+        this._playerList.splice(socketIndex, 1);
 
         if (isGameStarted) this.destroy();
     }
@@ -67,8 +78,8 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     {
         this._currentUserIndex = Math.floor(Math.random() * this.USER_LIMIT);
 
-        const player1 = this._userList[this._currentUserIndex];
-        const player2 = this._userList[(this._currentUserIndex + 1) % this.USER_LIMIT];
+        const player1 = this._playerList[this._currentUserIndex];
+        const player2 = this._playerList[(this._currentUserIndex + 1) % this.USER_LIMIT];
 
         this._logic.init(player1, player2);
 
@@ -79,10 +90,11 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
     {
         for (let i = 0; i < this.USER_LIMIT; ++i)
         {
-            const socket = this._userList[i];
+            const socketEventTarget = this._playerList[i];
+            const socket = socketEventTarget.target;
             const isCurrentPlayerTurn = i == this._currentUserIndex;
 
-            if (isCurrentPlayerTurn) socket.once('message', this._onMarkMessage.bind(this));
+            socketEventTarget.onMessage = isCurrentPlayerTurn ? this._onMarkMessage : null;
 
             socket.send(JSON.stringify({
                 header: 'nextTurn',
@@ -121,9 +133,10 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
             return;
         }
 
-        for (let i = 0; i < this._userList.length; ++i)
+        for (let i = 0; i < this._playerList.length; ++i)
         {
-            const socket = this._userList[i];
+            const socketEventTarget = this._playerList[i];
+            const socket = socketEventTarget.target;
 
             socket.send(JSON.stringify({
                 header: 'mark',
@@ -149,11 +162,11 @@ class TicTacToeWebRoom extends WebRoom.AbstractWebRoom
 
     destroy()
     {
-        for (let i = 0; i < this._userList.length; ++i)
+        for (let i = 0; i < this._playerList.length; ++i)
         {
-            //TODO Remove listeners on the proper way
-            const socket = this._userList[i];
-            socket.removeAllListeners();
+            const socketEventTarget = this._playerList[i];
+            const socket = socketEventTarget.target;
+            socketEventTarget.unlink();
             socket.close();
         }
         super.destroy();

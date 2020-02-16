@@ -2,6 +2,7 @@
 
 const WebRoom = {};
 
+WebRoom.UnifiedSocketEventTarget = require('./lib/unifiedsocket-eventtarget');
 WebRoom.AbstractWebRoom = require('./lib/abstract-webroom');
 WebRoom.Server = require('./lib/webroom-server');
 WebRoom.SocketUnifiedAdapter = require('./lib/socket-unifiedadapter');
