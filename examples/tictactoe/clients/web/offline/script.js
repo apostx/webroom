@@ -2,43 +2,47 @@
 
 (function()
 {
+    const SIZE = 3;
+
     const root = document.getElementById('root')
 
-    const ticTacToeLogic = new TicTacToeLogic();
-    const ticTacToeUI = new TicTacToeUI(root, 3, 'Offline Tic-Tac-Toe');
+    const ticTacToeData = new TicTacToeData();
+    const ticTacToeUI = new TicTacToeUI(root, SIZE, 'Offline Tic-Tac-Toe');
 
     ticTacToeUI.on('mark', function(fieldInfo)
     {
         const x = fieldInfo.colIndex;
         const y = fieldInfo.rowIndex;
 
-        const status = ticTacToeLogic.mark(x, y);
+        const markInfo = TicTacToeRuleset.mark(x, y, ticTacToeData);
+
+        ticTacToeData.update(x, y, markInfo.currentPlayer, markInfo.status);
         ticTacToeUI.setField(x, y);
 
         let statusInfo = null;
-        switch (status)
+        switch (ticTacToeData.status)
         {
-            case TicTacToeLogic.Status.WIN:
-                statusInfo = `${ticTacToeLogic.currentPlayer} won!`;
+            case ticTacToeData.Status.WIN:
+                statusInfo = `${ticTacToeData.currentPlayer} won!`;
                 break;
 
-            case TicTacToeLogic.Status.DRAW:
+            case ticTacToeData.Status.DRAW:
                 statusInfo = `Draw!`;
                 break;
 
             default:
-                statusInfo = `${ticTacToeLogic.currentPlayer}'s turn`;
+                statusInfo = `${ticTacToeData.currentPlayer}'s turn`;
         }
 
         ticTacToeUI.updateStatusInfo(statusInfo);
-        ticTacToeUI.setTableLocked(status != TicTacToeLogic.Status.IN_PROGRESS);
+        ticTacToeUI.setTableLocked(ticTacToeData.status != ticTacToeData.Status.IN_PROGRESS);
     });
 
     function init()
     {
-        ticTacToeLogic.init('&#11093;', '&#10060;');
+        ticTacToeData.reset(SIZE, '&#11093;', '&#10060;');
         ticTacToeUI.init();
-        ticTacToeUI.updateStatusInfo(`${ticTacToeLogic.currentPlayer} starts`);
+        ticTacToeUI.updateStatusInfo(`${ticTacToeData.currentPlayer} starts`);
     }
 
     ticTacToeUI.on('restart', init);

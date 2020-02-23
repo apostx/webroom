@@ -48,7 +48,8 @@ const webPath = `${ticTacToePath}\\clients\\web`;
 const staticWebServer = new StaticWebServer(
     webRoomServer,
     [
-        {filePath: `${ticTacToePath}\\shared\\tictactoe-logic.js\\`, requestUrl: '/shared/tictactoe_logic.js'},
+        {filePath: `${ticTacToePath}\\shared\\tictactoe-data.js\\`, requestUrl: '/shared/tictactoe_data.js'},
+        {filePath: `${ticTacToePath}\\shared\\tictactoe-ruleset.js\\`, requestUrl: '/shared/tictactoe_ruleset.js'},
         {filePath: `${ticTacToePath}\\clients\\shared\\tictactoe-unifiedconnection.js\\`, requestUrl: '/shared/tictactoe_unifiedconnection.js'},
         {filePath: `${webPath}\\online\\index.html`, requestUrl: '/'},
         {filePath: `${webPath}\\online\\index.html`, requestUrl: '/online/'},
