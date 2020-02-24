@@ -6,7 +6,8 @@
 
     const root = document.getElementById('root')
 
-    const ticTacToeData = new TicTacToeData();
+    const ticTacToeData = new TicTacToeData(TicTacToeStatus);
+    const ticTacToeRuleset = new TicTacToeRuleset(TicTacToeStatus);
     const ticTacToeUI = new TicTacToeUI(root, SIZE, 'Offline Tic-Tac-Toe');
 
     ticTacToeUI.on('mark', function(fieldInfo)
@@ -14,7 +15,7 @@
         const x = fieldInfo.colIndex;
         const y = fieldInfo.rowIndex;
 
-        const markInfo = TicTacToeRuleset.mark(x, y, ticTacToeData);
+        const markInfo = ticTacToeRuleset.mark(x, y, ticTacToeData);
 
         ticTacToeData.update(x, y, markInfo.currentPlayer, markInfo.status);
         ticTacToeUI.setField(x, y);
@@ -22,11 +23,11 @@
         let statusInfo = null;
         switch (ticTacToeData.status)
         {
-            case ticTacToeData.Status.WIN:
+            case TicTacToeStatus.WIN:
                 statusInfo = `${ticTacToeData.currentPlayer} won!`;
                 break;
 
-            case ticTacToeData.Status.DRAW:
+            case TicTacToeStatus.DRAW:
                 statusInfo = `Draw!`;
                 break;
 
@@ -35,7 +36,7 @@
         }
 
         ticTacToeUI.updateStatusInfo(statusInfo);
-        ticTacToeUI.setTableLocked(ticTacToeData.status != ticTacToeData.Status.IN_PROGRESS);
+        ticTacToeUI.setTableLocked(ticTacToeData.status != TicTacToeStatus.IN_PROGRESS);
     });
 
     function init()

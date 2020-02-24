@@ -2,11 +2,6 @@
 
 class TicTacToeData
 {
-    get Status()
-    {
-        return Status;
-    }
-
     get size()
     {
         return this._size;
@@ -42,8 +37,16 @@ class TicTacToeData
         return this._status;
     }
 
-    constructor()
+    /**
+     * @param {{
+     *     IN_PROGRESS:*,
+     *     WIN:*,
+     *     DRAW:*
+     * }} StatusEnum 
+     */   
+    constructor(StatusEnum)
     {
+        this._StatusEnum = StatusEnum;
         this._size = null;
         this._player1 = null;
         this._player2 = null;
@@ -63,7 +66,7 @@ class TicTacToeData
         this._player1 = this._currentPlayer = player1;
         this._player2 = player2;
         this._size = size;
-        this._status = Status.IN_PROGRESS;
+        this._status = this._StatusEnum.IN_PROGRESS;
         this._markedFieldNum = 0;
         this._table.length = 0;
         this._table.length = size * size;
@@ -89,13 +92,6 @@ class TicTacToeData
 
         Promise.resolve(this);
     }
-}
-
-class Status
-{
-    static get IN_PROGRESS() {return 'in_progress';}
-    static get WIN() {return 'win';}
-    static get DRAW() {return 'draw';}
 }
 
 if (typeof module === 'object' && module.exports) module.exports = TicTacToeData;

@@ -1,25 +1,56 @@
 'use strict';
 
 /**
- * @typedef {import('./tictactoe-data')} TicTacToeData
  * @typedef {{
- *     currentPlayer: any,
- *     status: string
+ *     IN_PROGRESS:*,
+ *     WIN:*,
+ *     DRAW:*
+ * }} Status
+*/
+
+/**
+ * @typedef {{
+ *     size: number,
+ *     markedFieldNum: number,
+ *     currentPlayer: *,
+ *     player1: *,
+ *     player2: *,
+ *     status: Status,
+ *     table: *[]
+ * }} Data
+ */
+
+/**
+ * @typedef {{
+ *     currentPlayer: *,
+ *     status: *
  * }} MarkInfo
  */
 
 class TicTacToeRuleset
 {
     /**
+     * @param {{
+     *     IN_PROGRESS: *,
+     *     WIN: *,
+     *     DRAW: *
+     * }} StatusEnum 
+     */   
+    constructor(StatusEnum)
+    {
+        this._StatusEnum = StatusEnum;
+    }
+
+    /**
      * @param {number} colIndex 
      * @param {number} rowIndex 
-     * @param {TicTacToeData} data 
+     * @param {Data} data 
      * 
      * @returns {MarkInfo}
      */
-    static mark(colIndex, rowIndex, data)
+    mark(colIndex, rowIndex, data)
     {
-        TicTacToeRuleset._validateMark(colIndex, rowIndex, data);
+        this._validateMark(colIndex, rowIndex, data);
 
         const isWin = TicTacToeRuleset._isWin(colIndex, rowIndex, data);
         const isFull = (data.markedFieldNum + 1) >= data.size * data.size;
@@ -28,11 +59,11 @@ class TicTacToeRuleset
         let status = data.status;
         if (isWin)
         {
-            status = data.Status.WIN;
+            status = this._StatusEnum.WIN;
         }
         else if (isFull)
         {
-            status = data.Status.DRAW;
+            status = this._StatusEnum.DRAW;
         }
         else
         {
@@ -48,11 +79,11 @@ class TicTacToeRuleset
     /**
      * @param {number} colIndex 
      * @param {number} rowIndex
-     * @param {TicTacToeData} data 
+     * @param {Data} data 
      */
-    static _validateMark(colIndex, rowIndex, data)
+    _validateMark(colIndex, rowIndex, data)
     {
-        if (data.status != data.Status.IN_PROGRESS)
+        if (data.status != this._StatusEnum.IN_PROGRESS)
         {
             throw 'Invalid mark: game is already ended (run the init before the next mark)';
         }
@@ -79,7 +110,7 @@ class TicTacToeRuleset
      * 
      * @param {*} colIndex 
      * @param {*} rowIndex 
-     * @param {TicTacToeData} data 
+     * @param {Data} data 
      */
     static _isWin(colIndex, rowIndex, data)
     {
@@ -96,7 +127,7 @@ class TicTacToeRuleset
      * @param {number} rowIndex 
      * @param {number} colStep 
      * @param {number} rowStep
-     * @param {TicTacToeData} data 
+     * @param {Data} data 
      */
     static _calculateLineLength(colIndex, rowIndex, colStep, rowStep, data)
     {
@@ -108,7 +139,7 @@ class TicTacToeRuleset
      * @param {number} rowIndex 
      * @param {number} colStep 
      * @param {number} rowStep 
-     * @param {TicTacToeData} data 
+     * @param {Data} data 
      */
     static _calculateDirectionLength(colIndex, rowIndex, colStep, rowStep, data)
     {
